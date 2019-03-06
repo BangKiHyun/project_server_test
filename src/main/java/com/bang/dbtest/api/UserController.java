@@ -42,14 +42,33 @@ public class UserController {
     }*/
 
 
+/*    //
+    @GetMapping("find/{userIdx}")
+    public ResponseEntity getUser(@RequestParam("name") final Optional<String> name) {
+        try {
+            //name이 null일 경우 false, null이 아닐 경우 true
+            if (name.isPresent()) return new ResponseEntity<>(userService.findByName(name.get()), HttpStatus.OK);
+            return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }*/
+
+
+    //User 저장
     @PostMapping("save")
     public ResponseEntity signup(
             SignUpReq signUpReq,
-            @RequestPart(value = "voicefile", required = false) final MultipartFile voicefile,
+            @RequestPart(value = "voicefile1", required = false) final MultipartFile voicefile1,
+            @RequestPart(value = "voicefile2", required = false) final MultipartFile voicefile2,
+            @RequestPart(value = "voicefile3", required = false) final MultipartFile voicefile3,
             @RequestPart(value = "videofile", required = false)final MultipartFile videofile) {
         try {
             //파일을 signUpReq에 저장
-            if (voicefile != null) signUpReq.setVoicefile(voicefile);
+            if (voicefile1 != null) signUpReq.setVoicefile1(voicefile1);
+            if (voicefile1 != null) signUpReq.setVoicefile2(voicefile2);
+            if (voicefile1 != null) signUpReq.setVoicefile3(voicefile3);
             if(videofile != null) signUpReq.setVideofile(videofile);
             return new ResponseEntity<>(userService.save(signUpReq), HttpStatus.OK);
         } catch (Exception e) {
@@ -58,6 +77,7 @@ public class UserController {
         }
     }
 
+    //User 정보 수정
     @PutMapping("/{userIdx}")
     public ResponseEntity signUp(
             @PathVariable(value = "userIdx") final int userIdx,
@@ -70,6 +90,31 @@ public class UserController {
         }
     }
 
+    //Delete VoiceFileUrl
+    @PutMapping("voiceFile1/{userIdx}")
+    public ResponseEntity deleteVoiceFile(
+            @PathVariable(value = "userIdx") final int userIdx) {
+        try {
+            return new ResponseEntity<>(userService.deleteByVoiceFile(userIdx), HttpStatus.OK);
+        }catch (Exception e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    //Delete VideoFileUrl
+    @PutMapping("videoFile/{userIdx}")
+    public ResponseEntity deleteVideoFile(
+            @PathVariable(value = "userIdx") final int userIdx) {
+        try {
+            return new ResponseEntity<>(userService.deleteByVideoFile(userIdx), HttpStatus.OK);
+        }catch (Exception e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    //User 삭제
     @DeleteMapping("/{userIdx}")
     public ResponseEntity deleteUser(@PathVariable(value = "userIdx") final int userIdx) {
         try {
@@ -79,4 +124,26 @@ public class UserController {
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+/*    //User VoiceFile 삭제
+    @DeleteMapping("/Voicefile/{userIdx}")
+    public ResponseEntity deleteVoiceFile(@PathVariable(value = "userIdx") final int userIdx) {
+        try {
+            return new ResponseEntity<>(userService.deleteByVoiceFile(userIdx), HttpStatus.OK);
+        }catch (Exception e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    //User VideoFile 삭제
+    @DeleteMapping("/Videofile/{userIdx}")
+    public ResponseEntity deleteVideoFile(@PathVariable(value = "userIdx") final int userIdx) {
+        try {
+            return new ResponseEntity<>(userService.deleteByVideoFile(userIdx), HttpStatus.OK);
+        }catch (Exception e) {
+            log.error(e.getMessage());
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }*/
 }

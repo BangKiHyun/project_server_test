@@ -78,8 +78,12 @@ public class UserService {
     public DefaultRes save(SignUpReq signUpReq) {
         try {
             //파일이 있다면 파일을 S3에 저장 후 경로를 저장
-            if (signUpReq.getVoicefile() != null)
-                signUpReq.setVoicefileUrl(s3FileUpload.upload(signUpReq.getVoicefile()));
+            if (signUpReq.getVoicefile1() != null)
+                signUpReq.setVoicefileUrl1(s3FileUpload.upload(signUpReq.getVoicefile1()));
+            if (signUpReq.getVoicefile2() != null)
+                signUpReq.setVoicefileUrl2(s3FileUpload.upload(signUpReq.getVoicefile2()));
+            if (signUpReq.getVoicefile3() != null)
+                signUpReq.setVoicefileUrl3(s3FileUpload.upload(signUpReq.getVoicefile3()));
             if (signUpReq.getVideofile() != null)
                 signUpReq.setVideofileUrl(s3FileUpload.upload(signUpReq.getVideofile()));
 
@@ -119,6 +123,8 @@ public class UserService {
         }
     }
 
+    //User voicefileUrl
+
 
     /**
      * 회원 탈퇴
@@ -134,6 +140,42 @@ public class UserService {
 
         try {
             userMapper.deleteByUserIdx(userIdx);
+            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.DELETE_USER);
+        } catch (Exception e) {
+            //Rollback
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
+        }
+    }
+
+    // Delete VoiceFile
+    @Transactional
+    public DefaultRes deleteByVoiceFile(final int userIdx) {
+        final User user = userMapper.findByUserIdx(userIdx);
+        if (user == null)
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
+        try {
+            userMapper.deleteByVoiceFile(userIdx);
+            return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.DELETE_USER);
+        } catch (Exception e) {
+            //Rollback
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            log.error(e.getMessage());
+            return DefaultRes.res(StatusCode.DB_ERROR, ResponseMessage.DB_ERROR);
+        }
+    }
+
+    // Delete VideoFile
+    @Transactional
+    public DefaultRes deleteByVideoFile(final int userIdx) {
+        final User user = userMapper.findByUserIdx(userIdx);
+        if (user == null)
+            return DefaultRes.res(StatusCode.NOT_FOUND, ResponseMessage.NOT_FOUND_USER);
+
+        try {
+            userMapper.deleteByVideoFile(userIdx);
             return DefaultRes.res(StatusCode.NO_CONTENT, ResponseMessage.DELETE_USER);
         } catch (Exception e) {
             //Rollback
